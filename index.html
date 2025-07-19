@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat AI Studio - Enhanced</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+</head>
+<body>
+  <canvas id="snow" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:1000;"></canvas>
+  <div class="overlay" id="settingsOverlay"></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div>
+        <div class="side-top">
+          <div class="side-logo">
+            <img src="https://cdn.jsdelivr.net/gh/blackforestlabs/img/chatgpt.svg" alt="Logo">
+            <span>ChatAI</span>
+          </div>
+          <div class="side-btn active" id="newChatBtn"><i class="ri-add-line"></i><span>Đoạn chat mới</span></div>
+          <div class="side-title">Đoạn chat của bạn</div>
+          <div class="side-chats" id="sideChats"></div>
+        </div>
+      </div>
+      <div class="side-bottom">
+        <div class="user-avatar default-avatar">
+          <i class="ri-user-line"></i>
+        </div>
+        <button id="toggleTheme" title="Đổi giao diện"><i class="ri-contrast-line"></i></button>
+        <button id="settingsBtn" title="Cài đặt"><i class="ri-settings-3-line"></i></button>
+        <label id="snowToggle" style="margin-left:8px;cursor:pointer;" title="Bật/tắt hiệu ứng tuyết">
+          <input type="checkbox" id="snowSwitch" checked style="vertical-align:middle;">
+          <span style="vertical-align:middle;">❄️</span>
+        </label>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="main-header">
+        <div class="title" id="chatTitle">ChatAI</div>
+        <div class="ai-model-select">
+          <select id="modelSelect">
+            <option value="deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free">DeepSeek-LLaMA 70B (Free)</option>
+            <option value="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free">Meta Llama 3.3-70B Turbo (Free)</option>
+            <option value="lgai/exaone-3-5-32b-instruct">Exaone 3.5-32B Instruct</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
+          </select>
+        </div>
+        <button class="plus-btn">Nâng cấp Plus</button>
+      </div>
+      <div class="main-content">
+        <div class="welcome" id="welcome">
+          <h2>Chào mừng đến với ChatAI Studio</h2>
+          <p>Bạn có thể bắt đầu trò chuyện ngay bây giờ hoặc thử các tính năng mới:</p>
+          <ul style="text-align: left; max-width: 500px; margin: 20px auto;">
+            <li>Nhấn giữ biểu tượng micrô để nói chuyện</li>
+            <li>Tải lên tài liệu để phân tích</li>
+            <li>Tạo hình ảnh từ mô tả</li>
+            <li>Xuất trò chuyện của bạn</li>
+          </ul>
+        </div>
+        <div class="chatbox">
+          <div class="chatlog" id="chatlog"></div>
+          <div id="loader">
+            <span class="thinking">
+              Bot đang suy luận<span class="dot">.</span>
+            </span>
+          </div>
+          <div class="file-upload-area">
+            <input type="file" id="fileUpload" accept=".txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.json">
+            <label for="fileUpload" class="file-upload-label">
+              <i class="ri-upload-line"></i>
+              <span>Tải lên tài liệu</span>
+            </label>
+            <div class="file-info" id="fileInfo">
+              <span class="file-name"></span>
+              <span class="remove-file"><i class="ri-close-line"></i></span>
+            </div>
+          </div>
+          <div class="imggen-area">
+            <input type="text" id="img_prompt" placeholder="Nhập mô tả để tạo ảnh bằng FLUX...">
+            <button id="imggenBtn">Tạo ảnh AI</button>
+            <span class="imggen-loader" id="imggen_loader">Đang tạo ảnh...</span>
+          </div>
+          <div class="input-area">
+            <input type="text" id="prompt" placeholder="Hỏi bất kỳ điều gì">
+            <button class="mic-btn" id="micBtn"><i class="ri-mic-line"></i></button>
+            <button id="sendBtn"><i class="ri-send-plane-2-line"></i></button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <div class="settings-title">Cài đặt</div>
+      <button class="close-settings" id="closeSettings"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="setting-item">
+      <label class="setting-label">Tốc độ đọc</label>
+      <select class="setting-control" id="speechRate">
+        <option value="0.7">Chậm</option>
+        <option value="1" selected>Bình thường</option>
+        <option value="1.3">Nhanh</option>
+      </select>
+    </div>
+    <div class="setting-item">
+      <div class="setting-toggle">
+        <label class="setting-label">Đọc phản hồi tự động</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoSpeech">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-description">Tự động đọc phản hồi từ AI</div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-toggle">
+        <label class="setting-label">Hiệu ứng tuyết</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="snowEffect">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-toggle">
+        <label class="setting-label">Chế độ tối</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkMode">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="setting-item">
+      <label class="setting-label">Xuất trò chuyện</label>
+      <div class="export-options">
+        <button class="export-btn" id="exportTxt"><i class="ri-file-text-line"></i> TXT</button>
+        <button class="export-btn" id="exportMd"><i class="ri-markdown-line"></i> Markdown</button>
+      </div>
+    </div>
+    <div class="setting-item">
+      <label class="setting-label">API Key (Tùy chọn)</label>
+      <input type="text" class="setting-control" id="customApiKey" placeholder="Nhập Together API Key">
+      <div class="setting-description">Sử dụng API Key của bạn nếu muốn</div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
