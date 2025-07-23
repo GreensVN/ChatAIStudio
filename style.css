@@ -14,6 +14,9 @@
   --warning: #ffc107;
   --danger: #dc3545;
   --info: #17a2b8;
+  --transition: 0.18s;
+  --shadow: 0 2px 18px rgba(0,0,0,0.12);
+  --font-main: 'Segoe UI', Arial, sans-serif;
 }
 
 body.dark {
@@ -25,16 +28,19 @@ body.dark {
   --bubble-bg: #263043;
   --bubble-user: #3b5998;
   --bubble-ai: #ffb6e6;
-  --code-bg: rgba(255,255,255,0.1);
+  --code-bg: rgba(255,255,255,0.08);
+  --shadow: 0 2px 18px rgba(0,0,0,0.38);
   color: #f0f0f0;
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: var(--font-main);
   background: var(--main-bg);
   color: #222;
   line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
 }
 
 body.dark { color: #f0f0f0; }
@@ -51,6 +57,7 @@ body.dark { color: #f0f0f0; }
   justify-content: space-between;
   position: relative;
   z-index: 100;
+  transition: background var(--transition);
 }
 
 .side-top { padding: 24px 0 0 26px;}
@@ -62,6 +69,7 @@ body.dark { color: #f0f0f0; }
   display: flex; 
   align-items: center; 
   gap: 10px;
+  user-select: none;
 }
 
 .side-logo img { width: 28px; height: 28px;}
@@ -76,7 +84,8 @@ body.dark { color: #f0f0f0; }
   font-size: 16px; 
   color: inherit; 
   cursor: pointer; 
-  transition: background 0.18s;
+  transition: background var(--transition);
+  user-select: none;
 }
 
 .side-btn.active { 
@@ -119,7 +128,7 @@ body.dark { color: #f0f0f0; }
   color: inherit; 
   margin-bottom: 4px; 
   cursor: pointer; 
-  transition: background 0.18s; 
+  transition: background var(--transition); 
   white-space: nowrap; 
   overflow: hidden; 
   text-overflow: ellipsis;
@@ -164,6 +173,7 @@ body.dark { color: #f0f0f0; }
   display: flex; 
   align-items: center; 
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .user-avatar.default-avatar i { font-size: 24px; margin: auto;}
@@ -175,7 +185,10 @@ body.dark { color: #f0f0f0; }
   font-size: 22px; 
   cursor: pointer; 
   margin-left: auto;
+  transition: color var(--transition);
 }
+
+#toggleTheme:focus { outline: 2px solid var(--primary); }
 
 .main { 
   flex: 1; 
@@ -184,6 +197,7 @@ body.dark { color: #f0f0f0; }
   flex-direction: column; 
   align-items: center; 
   justify-content: flex-start;
+  transition: background var(--transition);
 }
 
 .main-header { 
@@ -198,6 +212,7 @@ body.dark { color: #f0f0f0; }
   position: sticky;
   top: 0;
   z-index: 50;
+  transition: background var(--transition);
 }
 
 .main-header .title { 
@@ -219,7 +234,12 @@ body.dark { color: #f0f0f0; }
   font-weight: 500; 
   cursor: pointer; 
   margin-left: 18px; 
-  transition: background 0.18s;
+  transition: background var(--transition);
+  box-shadow: 0 2px 12px rgba(80,150,255,0.09);
+}
+
+.main-header .plus-btn:hover {
+  background: #d2e0ff;
 }
 
 .ai-model-select { margin: 0 20px; }
@@ -233,6 +253,8 @@ body.dark { color: #f0f0f0; }
   color: #2266d9;
   font-weight: 500;
   min-width: 200px;
+  outline: none;
+  transition: border var(--transition), background var(--transition);
 }
 
 body.dark .ai-model-select select {
@@ -260,6 +282,11 @@ body.dark .ai-model-select select {
   margin-top: 10px; 
   letter-spacing: 1px;
   padding: 0 20px;
+  animation: floatBubble 0.8s cubic-bezier(.22,.68,.53,.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome { animation: none; }
 }
 
 .chatbox { 
@@ -267,7 +294,7 @@ body.dark .ai-model-select select {
   max-width: 99vw; 
   background: var(--main-bg); 
   border-radius: var(--radius); 
-  box-shadow: 0 2px 18px rgba(0,0,0,0.07); 
+  box-shadow: var(--shadow); 
   border: 1.5px solid var(--border); 
   padding: 0; 
   display: flex; 
@@ -275,12 +302,13 @@ body.dark .ai-model-select select {
   align-items: stretch; 
   min-height: 400px;
   margin-bottom: 20px;
+  transition: border var(--transition), background var(--transition), box-shadow var(--transition);
 }
 
 body.dark .chatbox { 
   background: #23272f; 
   border-color: #333;
-  box-shadow: 0 2px 18px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow);
 }
 
 .chatlog { 
@@ -291,6 +319,7 @@ body.dark .chatbox {
   flex-direction: column; 
   gap: 16px; 
   overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 .bubble { 
@@ -302,6 +331,7 @@ body.dark .chatbox {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
   animation: floatBubble 0.6s cubic-bezier(.22,.68,.53,.99);
   position: relative;
+  transition: background var(--transition), color var(--transition);
 }
 
 .bubble.user { 
@@ -350,12 +380,13 @@ body.dark .chatbox {
   transition: opacity 0.2s;
 }
 
-.bubble:hover .message-actions {
+.bubble:hover .message-actions,
+.bubble:focus-within .message-actions {
   opacity: 1;
 }
 
 .bubble .message-action {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.18);
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -366,7 +397,7 @@ body.dark .chatbox {
   color: white;
   cursor: pointer;
   font-size: 12px;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .bubble.ai .message-action {
@@ -374,8 +405,11 @@ body.dark .chatbox {
   color: var(--bubble-ai);
 }
 
-.bubble .message-action:hover {
+.bubble .message-action:hover,
+.bubble .message-action:focus {
   background: rgba(0,0,0,0.3);
+  color: #fff;
+  outline: none;
 }
 
 .bubble.img { 
@@ -411,15 +445,16 @@ body.dark .chatbox {
   padding: 12px;
   overflow-x: auto;
   margin: 8px 0;
-  font-family: 'Courier New', monospace;
+  font-family: 'Fira Mono', 'Courier New', monospace;
   font-size: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 .bubble code {
   background: var(--code-bg);
   border-radius: 4px;
   padding: 2px 4px;
-  font-family: 'Courier New', monospace;
+  font-family: 'Fira Mono', 'Courier New', monospace;
   font-size: 14px;
 }
 
@@ -489,10 +524,12 @@ body.dark .input-area {
   background: transparent; 
   color: inherit;
   padding-right: 40px;
+  transition: background var(--transition), color var(--transition);
 }
 
 .input-area input::placeholder { 
   color: #aaa;
+  opacity: 0.7;
 }
 
 .input-area button { 
@@ -504,7 +541,7 @@ body.dark .input-area {
   font-size: 16px; 
   font-weight: 500; 
   cursor: pointer; 
-  transition: background 0.18s;
+  transition: background var(--transition);
 }
 
 .input-area button:active { 
@@ -520,11 +557,13 @@ body.dark .input-area {
   font-size: 20px;
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, color var(--transition);
 }
 
-.input-area .mic-btn:hover {
+.input-area .mic-btn:hover,
+.input-area .mic-btn:focus {
   opacity: 1;
+  color: var(--danger);
 }
 
 .input-area .mic-btn.recording {
@@ -554,6 +593,7 @@ body.dark .imggen-area {
   border: 1px solid #ccd; 
   outline: none; 
   background: #f6f6fc;
+  transition: background var(--transition), color var(--transition);
 }
 
 body.dark .imggen-area input { 
@@ -574,6 +614,10 @@ body.dark .imggen-area input {
   box-shadow: 0 2px 12px rgba(80,150,255,0.13); 
   transition: box-shadow 0.2s, background 0.2s;
   height: 36px;
+}
+
+.imggen-area button:hover {
+  background: #444;
 }
 
 .imggen-loader { 
@@ -613,7 +657,8 @@ body.dark .file-upload-area {
   transition: background 0.2s;
 }
 
-.file-upload-label:hover {
+.file-upload-label:hover,
+.file-upload-label:focus {
   background: var(--active-bg);
 }
 
@@ -679,9 +724,10 @@ body.dark .file-upload-area {
   background: var(--sidebar-bg);
   border-left: 1px solid var(--border);
   padding: 20px;
-  transition: right 0.3s ease;
+  transition: right 0.3s cubic-bezier(.23,1.43,.45,1.09);
   z-index: 200;
   overflow-y: auto;
+  box-shadow: -2px 0 18px rgba(0,0,0,0.08);
 }
 
 .settings-panel.open {
@@ -802,6 +848,11 @@ input:checked + .toggle-slider:before {
   font-size: 14px;
 }
 
+.export-btn:hover,
+.export-btn:focus {
+  background: #1b4fa7;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -851,6 +902,15 @@ input:checked + .toggle-slider:before {
   border-left: 4px solid var(--info);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+}
+
 @media (max-width: 900px) {
   .sidebar { width: 62px;}
   .side-top { padding: 12px 0 0 7px;}
@@ -863,4 +923,5 @@ input:checked + .toggle-slider:before {
   .settings-panel {
     width: 90vw;
   }
+  .bubble { max-width: 98vw; }
 }
